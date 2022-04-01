@@ -8,7 +8,10 @@ import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class GameWindow implements AbstractWindowI {
+/**
+ * A window class that can render some stuffs
+ */
+public class Window implements AbstractWindowI {
 
     // Properties
 
@@ -26,15 +29,13 @@ public class GameWindow implements AbstractWindowI {
 
     // Initializing Window
 
+    /**
+     * Used to create window or change window status.
+     */
     private void initWindow() {
         Graphics.init();
 
-        if (windowHandle != 0) {
-            glfwHideWindow(windowHandle);
-            glfwWindowShouldClose(windowHandle);
-            glfwDestroyWindow(windowHandle);
-            windowHandle = 0;
-        }
+        free();
 
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_RESIZABLE, isResizable ? GLFW_TRUE : GLFW_FALSE);
@@ -49,48 +50,87 @@ public class GameWindow implements AbstractWindowI {
 
         bindContext();
         GL.createCapabilities();
-        setVSyncEnabled(true);
+        setVSyncEnabled(isVSync);
+        glfwSwapInterval(isVSync ? 1 : 0);
+
+        glfwSetWindowSizeLimits(windowHandle, 250, 250, GLFW_DONT_CARE, GLFW_DONT_CARE);
+        glfwSetWindowPosCallback(windowHandle, (window, x, y) -> {
+            this.x = x;
+            this.y = y;
+        });
+        glfwSetWindowSizeCallback(windowHandle, (window, w, h) -> {
+            this.width = w;
+            this.height = h;
+        });
+
     }
 
-    public GameWindow(String title, int width, int height) {
+    /**
+     * @param title title for the window.
+     * @param width width of the window.
+     * @param height height of the window.
+     */
+    public Window(String title, int width, int height) {
         this.title = title;
         this.width = width;
         this.height = height;
         initWindow();
     }
 
-    public GameWindow(String title) {
+    /**
+     * @param title title for the window.
+     * Create a Game Window with default size of 647x480.
+     */
+    public Window(String title) {
         this(title, 674, 480);
     }
 
-    public GameWindow() {
+    /**
+     * Create a Game Window with default settings:
+     * Title: Game Window
+     * Size:  647x480
+     */
+    public Window() {
         this("Game Window");
     }
 
     //
 
+    /**
+     * @return the window's width.
+     */
     @Override
     public int getWidth() {
         return width;
     }
 
+    /**
+     * @return the window's height.
+     */
     @Override
     public int getHeight() {
         return height;
     }
 
+    /**
+     * @return the window's top left x-position.
+     */
     @Override
     public int getX() {
-        throw new NotImplementedException();
-        // TODO
+        return x;
     }
 
+    /**
+     * @return the window's top left y-position.
+     */
     @Override
     public int getY() {
-        throw new NotImplementedException();
-        // TODO
+        return y;
     }
 
+    /**
+     * Update the content of the window.
+     */
     @Override
     public void render() {
         glfwPollEvents();
@@ -107,6 +147,10 @@ public class GameWindow implements AbstractWindowI {
         // TODO
     }
 
+    /**
+     * @param visible visible.
+     * Set window's visibility.
+     */
     @Override
     public void setVisible(boolean visible) {
         if (visible != this.isVisible) {
@@ -118,28 +162,44 @@ public class GameWindow implements AbstractWindowI {
         }
     }
 
+    /**
+     * @return true when the window is visible otherwise false.
+     */
     @Override
     public boolean isVisible() {
         return isVisible;
     }
 
+    /**
+     * @param title new title for the window.
+     * Set a new title for the window.
+     */
     @Override
     public void setTitle(String title) {
-        // TODO: Delay Clock
         this.title = title;
     }
 
+    /**
+     * @return the window's title.
+     */
     @Override
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Set an icon for this window.
+     */
     @Override
     public void setIcon() {
         throw new NotImplementedException();
         // TODO
     }
 
+    /**
+     * @param resizable resizable
+     * Set whether this window should be resizable or not.
+     */
     @Override
     public void setResizable(boolean resizable) {
         if (resizable != this.isResizable) {
@@ -148,11 +208,19 @@ public class GameWindow implements AbstractWindowI {
         }
     }
 
+    /**
+     * @return true if this window is resizable otherwise false.
+     */
     @Override
     public boolean isResizable() {
         return isResizable;
     }
 
+    /**
+     * @param enabled VSync Enabled
+     * Set whether enable VSync or not.
+     * Used to limit the framerate to monitor's fresh rate and prevent tearing.
+     */
     @Override
     public void setVSyncEnabled(boolean enabled) {
         if (enabled != isVSync) {
@@ -161,22 +229,35 @@ public class GameWindow implements AbstractWindowI {
         }
     }
 
+    /**
+     * @return true if VSync is enabled otherwise false.
+     */
     @Override
     public boolean isVSyncEnabled() {
         return isVSync;
     }
 
+    /**
+     * @return true if this window is still alive (not closed) otherwise false.
+     */
     @Override
     public boolean isAlive() {
         return !glfwWindowShouldClose(windowHandle);
     }
 
+    /**
+     * Close this window.
+     */
     @Override
     public void close() {
         glfwSetWindowShouldClose(windowHandle, true);
     }
 
+    /**
+     * Clean up window's data
+     */
     @Override
+    @Deprecated
     public void free() {
         if (windowHandle != 0) {
             glfwHideWindow(windowHandle);
@@ -188,6 +269,9 @@ public class GameWindow implements AbstractWindowI {
         // TODO: MORE
     }
 
+    /**
+     * Bind the OpenGL Context of this window
+     */
     void bindContext() {
         glfwMakeContextCurrent(windowHandle);
     }
