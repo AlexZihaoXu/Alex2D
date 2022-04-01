@@ -1,6 +1,7 @@
 package site.alex_xu.dev.alex2d;
 
 import site.alex_xu.dev.alex2d.graphics.Window;
+import site.alex_xu.dev.alex2d.system.Clock;
 
 import java.util.ArrayList;
 
@@ -13,18 +14,30 @@ public class Main {
         window.setVSyncEnabled(false);
 
         window.setVisible(true);
-        long before = System.nanoTime();
+        Clock clock = new Clock();
+        Clock[] clocks = new Clock[10000];
+        for (int i = 0; i < clocks.length; i++) {
+            clocks[i] = new Clock();
+        }
 
+        int count = 0;
+        float sum = 0;
+        Clock timer = new Clock();
 
         while (window.isAlive()) {
             window.render();
 
-            long now = System.nanoTime();
-            float dt = (System.nanoTime() - before) / 1e9f;
-            before = now;
+            float dt = clock.reset();
+            for (Clock clock1 : clocks) {
+                clock1.reset();
+            }
+            if (timer.elapsedTime() > 10) {
+                count += 1;
+                sum += dt;
+            }
 
-            System.out.println(dt);
-            window.setTitle(Math.round(1 / dt) + " fps");
+            System.out.printf("%.10f \n", dt);
+            window.setTitle(String.format("fps: %.2f | time: %5.1f | Samples: %10d", 1 / (sum / count), timer.elapsedTime(), count));
 
             glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
