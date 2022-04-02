@@ -5,6 +5,10 @@ import site.alex_xu.dev.alex2d.system.abstracting.AbstractBufferI;
 public interface AbstractWindowI extends AbstractBufferI, AbstractPositionI, AbstractFrameI {
     void render();
 
+    // Status
+
+    boolean isFocused();
+
     // Visibility
 
     void setVisible(boolean visible);

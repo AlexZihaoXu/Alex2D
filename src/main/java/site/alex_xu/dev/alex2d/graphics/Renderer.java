@@ -7,6 +7,9 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 public class Renderer extends BaseRenderer {
+    public Renderer(Window window) {
+        super(window);
+    }
 
     // Stroke
 

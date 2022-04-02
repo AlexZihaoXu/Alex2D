@@ -1,5 +1,7 @@
 package site.alex_xu.dev.alex2d.system;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
+
 public class Clock {
 
     private static final long startTime = java.lang.System.nanoTime();

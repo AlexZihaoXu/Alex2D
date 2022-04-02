@@ -2,6 +2,7 @@ package site.alex_xu.dev.alex2d.graphics;
 
 import org.lwjgl.opengl.GL;
 import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractWindowI;
+import site.alex_xu.dev.alex2d.system.Clock;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
@@ -20,12 +21,16 @@ public class Window implements AbstractWindowI {
     private boolean isResizable = false;
     private boolean isVisible = false;
     private boolean isVSync = false;
+    private boolean isIconified = false;
+    private boolean isFocused = false;
 
     // Memories
 
     private long _lastTitleChangeTime = 0;
     private long windowHandle = 0;
     private int x, y;
+
+    // Cache
 
     // Initializing Window
 
@@ -62,12 +67,18 @@ public class Window implements AbstractWindowI {
             this.width = w;
             this.height = h;
         });
+        glfwSetWindowIconifyCallback(windowHandle, (window, iconified) -> {
+            this.isIconified = iconified;
+        });
+        glfwSetWindowFocusCallback(windowHandle, (window, focused) -> {
+            isFocused = focused;
+        });
 
     }
 
     /**
-     * @param title title for the window.
-     * @param width width of the window.
+     * @param title  title for the window.
+     * @param width  width of the window.
      * @param height height of the window.
      */
     public Window(String title, int width, int height) {
@@ -79,7 +90,7 @@ public class Window implements AbstractWindowI {
 
     /**
      * @param title title for the window.
-     * Create a Game Window with default size of 647x480.
+     *              Create a Game Window with default size of 647x480.
      */
     public Window(String title) {
         this(title, 674, 480);
@@ -133,8 +144,9 @@ public class Window implements AbstractWindowI {
      */
     @Override
     public void render() {
-        glfwPollEvents();
+
         glfwSwapBuffers(windowHandle);
+        glfwPollEvents();
 
         long now = System.currentTimeMillis();
 
@@ -144,12 +156,19 @@ public class Window implements AbstractWindowI {
             glfwSetWindowTitle(windowHandle, title);
         }
 
-        // TODO
+    }
+
+    /**
+     * @return true if the window is focused otherwise false
+     */
+    @Override
+    public boolean isFocused() {
+        return isFocused;
     }
 
     /**
      * @param visible visible.
-     * Set window's visibility.
+     *                Set window's visibility.
      */
     @Override
     public void setVisible(boolean visible) {
@@ -172,7 +191,7 @@ public class Window implements AbstractWindowI {
 
     /**
      * @param title new title for the window.
-     * Set a new title for the window.
+     *              Set a new title for the window.
      */
     @Override
     public void setTitle(String title) {
@@ -198,7 +217,7 @@ public class Window implements AbstractWindowI {
 
     /**
      * @param resizable resizable
-     * Set whether this window should be resizable or not.
+     *                  Set whether this window should be resizable or not.
      */
     @Override
     public void setResizable(boolean resizable) {
@@ -218,8 +237,8 @@ public class Window implements AbstractWindowI {
 
     /**
      * @param enabled VSync Enabled
-     * Set whether enable VSync or not.
-     * Used to limit the framerate to monitor's fresh rate and prevent tearing.
+     *                Set whether enable VSync or not.
+     *                Used to limit the framerate to monitor's fresh rate and prevent tearing.
      */
     @Override
     public void setVSyncEnabled(boolean enabled) {
