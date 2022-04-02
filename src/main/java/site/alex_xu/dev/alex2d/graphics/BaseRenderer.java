@@ -7,6 +7,8 @@ import site.alex_xu.dev.alex2d.graphics.gl.VertexArray;
 import site.alex_xu.dev.alex2d.graphics.gl.VertexBuffer;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.Stack;
+
 import static org.lwjgl.opengl.GL11C.*;
 
 abstract class BaseRenderer {
@@ -17,6 +19,9 @@ abstract class BaseRenderer {
 
     private static Shader trianglesShader;
     private static VertexArray trianglesVAO;
+
+    private static Shader circleShader;
+    private static VertexArray circleVAO;
 
     private static void init() {
         if (initialized)
@@ -30,6 +35,18 @@ abstract class BaseRenderer {
             VertexBuffer trianglesVBO = new VertexBuffer(new float[]{0, 1, 2});
             trianglesVAO.configure(trianglesVBO).push(1).apply();
         }
+        if (circleShader == null) {
+            circleShader = new Shader()
+                    .addFromResource("shaders/circle.frag")
+                    .addFromResource("shaders/circle.vert")
+                    .link();
+            circleVAO = new VertexArray();
+            VertexBuffer trianglesVBO = new VertexBuffer(new float[]{
+                    -1, -1, 1, -1, 1, 1,
+                    1, 1, -1, 1, -1, -1
+            });
+            circleVAO.configure(trianglesVBO).push(2).apply();
+        }
         initialized = true;
     }
 
@@ -38,6 +55,7 @@ abstract class BaseRenderer {
     private Window window = null;
     private Matrix4f orthoMatrix = new Matrix4f();
     private float r = 1, g = 1, b = 1, a = 1;
+    private final Stack<Matrix4f> matrixStack = new Stack<>();
 
     //
     private void prepareDraw() {
@@ -51,6 +69,7 @@ abstract class BaseRenderer {
 
     public BaseRenderer(Window window) {
         this.window = window;
+        matrixStack.push(new Matrix4f());
     }
 
 
@@ -82,16 +101,24 @@ abstract class BaseRenderer {
         trianglesShader.setVec2("pos3", x3, y3);
         trianglesShader.setVec4("color", r, g, b, a);
         trianglesShader.setMat4("windowMat", false, orthoMatrix);
-        trianglesShader.setMat4("transMat", false, new Matrix4f());
+        trianglesShader.setMat4("transMat", false, getTransformationsMatrix());
 
         trianglesVAO.bind();
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        // TODO
     }
 
     public void fillCircle(float x, float y, float radius) {
-        // TODO
+        prepareDraw();
+        circleShader.bind();
+        circleShader.setVec3("circle", x, y, radius);
+        circleShader.setVec4("color", r, g, b, a);
+        circleShader.setMat4("windowMat", false, orthoMatrix);
+        circleShader.setMat4("transMat", false, getTransformationsMatrix());
+
+        circleVAO.bind();
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        // TODO: Optimize to triangle instead of rectangle
     }
 
     public void fillRect(float x, float y, float w, float h) {
@@ -99,7 +126,7 @@ abstract class BaseRenderer {
         trianglesShader.bind();
         trianglesShader.setVec4("color", r, g, b, a);
         trianglesShader.setMat4("windowMat", false, orthoMatrix);
-        trianglesShader.setMat4("transMat", false, new Matrix4f());
+        trianglesShader.setMat4("transMat", false, getTransformationsMatrix());
 
         trianglesShader.setVec2("pos1", x, y + h);
         trianglesShader.setVec2("pos2", x + w, y);
@@ -121,31 +148,32 @@ abstract class BaseRenderer {
     // Transformations
 
     public void translate(float x, float y) {
-        // TODO
+        this.matrixStack.peek().translate(x, y, 0);
     }
 
     public void rotate(float r) {
-        // TODO
+        this.matrixStack.peek().rotate(r, 0, 0, 1);
     }
 
     public void scale(float x, float y) {
-        // TODO
+        this.matrixStack.peek().scale(x, y, 0);
     }
 
     public void pushMatrix() {
-        // TODO
+        this.matrixStack.push(new Matrix4f(this.matrixStack.peek()));
     }
 
     public void popMatrix() {
-        // TODO
+        this.matrixStack.pop();
     }
 
     public void resetMatrix() {
-        // TODO
+        this.matrixStack.pop();
+        this.matrixStack.push(new Matrix4f());
     }
 
-    public Matrix4f copyMatrix() {
-        throw new NotImplementedException();
+    public Matrix4f getTransformationsMatrix() {
+        return this.matrixStack.peek();
     }
 
     // Setters

@@ -26,10 +26,11 @@ public class Main {
         Clock timer = new Clock();
 
         LinkedList<Vector2f> fpsList = new LinkedList<>();
-        Renderer renderer = new Renderer(window);
 
-        ArrayList<Vector2f> poses = new ArrayList<>();
-        ArrayList<Vector3f> colors = new ArrayList<>();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        Renderer renderer = new Renderer(window);
 
         while (window.isAlive()) {
             float dt = clock.reset();
@@ -54,26 +55,22 @@ public class Main {
             glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            for (int i = 0; i < 30; i++) {
-                poses.add(new Vector2f(
-                        (float) (window.getWidth() * Math.random()),
-                        (float) (window.getHeight() * Math.random())
-                ));
-                colors.add(new Vector3f(
-                        (float) (Math.random() * 0.5 + 0.5),
-                        (float) (Math.random() * 0.5 + 0.5),
-                        (float) (Math.random() * 0.5 + 0.5)
-                ));
-            }
-            for (int i = 0; i < poses.size(); i++) {
-                Vector3f color = colors.get(i);
-                Vector2f pos = poses.get(i);
-                renderer.setColor(color.x, color.y, color.z);
-                renderer.fillTriangle(pos.x, pos.y, pos.x + 50, pos.y, pos.x + 50, pos.y + 50);
-            }
-            if (poses.size() % 25 == 0)
-                System.out.println(poses.size());
-//            Thread.sleep(0, 10);
+            renderer.pushMatrix();
+
+            renderer.setColor(1);
+            renderer.translate(100, 0);
+            renderer.fillCircle(window.getWidth() / 2f, window.getHeight() / 2f, 100);
+
+            renderer.popMatrix();
+
+            renderer.setColor(0.2f, 1, 0.2f);
+
+            renderer.pushMatrix();
+            renderer.translate(100, 100);
+            renderer.rotate(45 / 3.1415926f * 180f);
+            renderer.translate(-100, -100);
+            renderer.fillRect(0, 0, 200, 200);
+            renderer.popMatrix();
         }
 
     }
