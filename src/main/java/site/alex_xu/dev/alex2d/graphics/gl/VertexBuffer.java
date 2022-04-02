@@ -18,7 +18,7 @@ public class VertexBuffer extends BufferType {
 
     @Override
     protected void onDispose() {
-        glDeleteBuffers(id);
+        freedBuffers.add(id);
     }
 
     @Override

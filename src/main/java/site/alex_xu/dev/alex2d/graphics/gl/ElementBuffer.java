@@ -1,5 +1,9 @@
 package site.alex_xu.dev.alex2d.graphics.gl;
 
+import site.alex_xu.dev.alex2d.graphics.Graphics;
+
+import java.util.LinkedList;
+
 import static org.lwjgl.opengl.GL15.*;
 
 public class ElementBuffer extends BufferType {
@@ -19,7 +23,7 @@ public class ElementBuffer extends BufferType {
 
     @Override
     protected void onDispose() {
-        glDeleteBuffers(id);
+        freedBuffers.add(id);
     }
 
     @Override

@@ -189,6 +189,6 @@ public class Shader extends Freeable {
 
     @Override
     protected void onDispose() {
-        glDeleteProgram(programID);
+        freedShaders.add(programID);
     }
 }

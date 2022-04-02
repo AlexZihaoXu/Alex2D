@@ -1,14 +1,18 @@
 package site.alex_xu.dev.alex2d.graphics;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractWindowI;
 import site.alex_xu.dev.alex2d.system.Clock;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
-import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL44.glBindTextures;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -147,6 +151,7 @@ public class Window implements AbstractWindowI {
      */
     @Override
     public void render() {
+        Graphics.gc();
 
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();

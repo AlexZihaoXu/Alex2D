@@ -57,7 +57,7 @@ public class VertexArray extends BufferType {
 
     @Override
     protected void onDispose() {
-        glDeleteVertexArrays(id);
+        freedVAOs.add(id);
     }
 
     @Override

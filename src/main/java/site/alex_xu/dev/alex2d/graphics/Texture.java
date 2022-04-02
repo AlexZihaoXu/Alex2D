@@ -3,6 +3,10 @@ package site.alex_xu.dev.alex2d.graphics;
 import org.lwjgl.system.MemoryStack;
 import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractFrameI;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -57,6 +61,7 @@ public class Texture extends ImageType {
 
     @Override
     void onDispose() {
-        glDeleteTextures(textureID);
+        Graphics.freedTextures.add(textureID);
     }
 }
+

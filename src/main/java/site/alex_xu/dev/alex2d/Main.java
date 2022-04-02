@@ -10,6 +10,10 @@ import site.alex_xu.dev.alex2d.graphics.Texture;
 import site.alex_xu.dev.alex2d.graphics.Window;
 import site.alex_xu.dev.alex2d.system.Clock;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -44,9 +48,11 @@ public class Main {
         ArrayList<Vector4f> apples = new ArrayList<>();
 
         BufferedTexture bufferedTexture = new BufferedTexture(128, 128);
+        BufferedTexture awa = new BufferedTexture(128, 128);
 
         Renderer br = new Renderer(bufferedTexture);
 
+        int frameCount = 0;
         while (window.isAlive()) {
             float dt = clock.reset();
             window.render();
@@ -129,7 +135,7 @@ public class Main {
                     bufferedTexture.getWidth() * 0.5f, bufferedTexture.getHeight() * 0.5f,
                     window.getWidth() / 2f - bufferedTexture.getWidth() / 2f,
                     window.getHeight() / 2f - bufferedTexture.getHeight() / 2f
-                    );
+            );
 
         }
 

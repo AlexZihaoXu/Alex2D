@@ -2,6 +2,7 @@ package site.alex_xu.dev.alex2d.graphics;
 
 import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractFrameI;
 
+import java.awt.*;
 import java.nio.ByteBuffer;
 
 import static org.lwjgl.opengl.GL30.*;
@@ -39,12 +40,12 @@ public class BufferedTexture extends ImageType {
 
     @Override
     public int getWidth() {
-        return width; // TODO
+        return width;
     }
 
     @Override
     public int getHeight() {
-        return height; // TODO
+        return height;
     }
 
 
@@ -60,7 +61,7 @@ public class BufferedTexture extends ImageType {
 
     @Override
     public void onDispose() {
-        glDeleteTextures(textureID);
-        glDeleteFramebuffers(frameBufferID);
+        Graphics.freedTextures.add(textureID);
+        Graphics.freedFramebuffers.add(frameBufferID);
     }
 }
