@@ -1,18 +1,23 @@
 package site.alex_xu.dev.alex2d;
 
+import org.apache.commons.io.IOUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import site.alex_xu.dev.alex2d.graphics.Renderer;
+import site.alex_xu.dev.alex2d.graphics.Texture;
 import site.alex_xu.dev.alex2d.graphics.Window;
 import site.alex_xu.dev.alex2d.system.Clock;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Objects;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         Window window = new Window();
         window.setResizable(true);
         window.setVSyncEnabled(true);
@@ -31,6 +36,10 @@ public class Main {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         Renderer renderer = new Renderer(window);
+
+        Texture texture = new Texture(IOUtils.toByteArray(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("img.png"))));
+
+
 
         while (window.isAlive()) {
             float dt = clock.reset();
@@ -70,6 +79,15 @@ public class Main {
             renderer.rotate(45 / 3.1415926f * 180f);
             renderer.translate(-100, -100);
             renderer.fillRect(0, 0, 200, 200);
+            renderer.popMatrix();
+
+            renderer.pushMatrix();
+            renderer.scale(0.5f, 1);
+            renderer.translate(100, 100);
+            renderer.scale(25);
+            renderer.rotate((float) glfwGetTime());
+            renderer.translate(-8, -8);
+            renderer.drawImage(texture, 0, 0);
             renderer.popMatrix();
         }
 

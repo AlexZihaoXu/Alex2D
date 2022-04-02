@@ -10,6 +10,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.util.Stack;
 
 import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 abstract class BaseRenderer {
 
@@ -22,6 +24,9 @@ abstract class BaseRenderer {
 
     private static Shader circleShader;
     private static VertexArray circleVAO;
+
+    private static Shader textureShader;
+    private static VertexArray textureVAO;
 
     private static void init() {
         if (initialized)
@@ -46,6 +51,18 @@ abstract class BaseRenderer {
                     1, 1, -1, 1, -1, -1
             });
             circleVAO.configure(trianglesVBO).push(2).apply();
+        }
+        if (textureShader == null) {
+            textureShader = new Shader()
+                    .addFromResource("shaders/texture.frag")
+                    .addFromResource("shaders/texture.vert")
+                    .link();
+            textureVAO = new VertexArray();
+            VertexBuffer textureVBO = new VertexBuffer(new float[]{
+                    0, 0, 0, 1, 1, 1,
+                    1, 1, 1, 0, 0, 0
+            });
+            textureVAO.configure(textureVBO).push(2).apply();
         }
         initialized = true;
     }
@@ -142,7 +159,25 @@ abstract class BaseRenderer {
     // Image
 
     public void drawImage(AbstractFrameI image, float srcX, float srcY, float srcW, float srcH, float dstX, float dstY, float dstW, float dstH) {
-        // TODO
+        if (image instanceof Texture) {
+            prepareDraw();
+
+            textureShader.bind();
+            textureShader.setMat4("windowMat", false, orthoMatrix);
+            textureShader.setMat4("transMat", false, getTransformationsMatrix());
+
+            textureShader.setVec4("rect", dstX, dstY, dstW, dstH);
+            textureShader.setVec4("srcRect", srcX, srcY, srcW, srcH);
+            textureShader.setFloat("texWidth", image.getWidth());
+            textureShader.setFloat("texHeight", image.getHeight());
+            textureShader.setInt("texture0", 0);
+
+            glActiveTexture(GL_TEXTURE0);
+            ((Texture) image).bind();
+
+            textureVAO.bind();
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        }
     }
 
     // Transformations

@@ -9,7 +9,7 @@ public abstract class ImageType implements AbstractFrameI {
     protected int textureID;
     protected int width, height, channels;
 
-    public int getTextureID() {
+    int getTextureID() {
         return textureID;
     }
 
@@ -31,19 +31,19 @@ public abstract class ImageType implements AbstractFrameI {
 
     abstract void onDispose();
 
-    public void bind() {
+    void bind() {
         glBindTexture(GL_TEXTURE_2D, textureID);
     }
 
-    public void unbind() {
+    void unbind() {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    public boolean isFreed() {
+    boolean isFreed() {
         return freed;
     }
 
-    public final void free() {
+    final void free() {
         if (freed)
             return;
         onDispose();
