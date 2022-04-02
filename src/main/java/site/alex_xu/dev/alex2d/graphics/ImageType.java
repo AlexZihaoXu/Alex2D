@@ -4,7 +4,7 @@ import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractFrameI;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public abstract class ImageType implements AbstractFrameI {
+abstract class ImageType implements AbstractFrameI {
     private boolean freed = false;
     protected int textureID;
     protected int width, height, channels;

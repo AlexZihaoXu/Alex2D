@@ -3,6 +3,7 @@ package site.alex_xu.dev.alex2d;
 import org.apache.commons.io.IOUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import site.alex_xu.dev.alex2d.graphics.Renderer;
 import site.alex_xu.dev.alex2d.graphics.Texture;
 import site.alex_xu.dev.alex2d.graphics.Window;
@@ -39,6 +40,7 @@ public class Main {
 
         Texture texture = new Texture(IOUtils.toByteArray(Objects.requireNonNull(Main.class.getClassLoader().getResourceAsStream("img.png"))));
 
+        ArrayList<Vector4f> apples = new ArrayList<>();
 
 
         while (window.isAlive()) {
@@ -64,31 +66,31 @@ public class Main {
             glClearColor(0, 0, 0, 1);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            renderer.pushMatrix();
+            for (int i = 0; i < 40; i++) {
+                apples.add(new Vector4f(
+                        (float) (Math.random() * window.getWidth()),
+                        (float) (Math.random() * window.getHeight()),
+                        (float) (Math.random() * Math.PI * 2),
+                        (float) (Math.random() * 2 + 0.5)
+                ));
+            }
 
-            renderer.setColor(1);
-            renderer.translate(100, 0);
-            renderer.fillCircle(window.getWidth() / 2f, window.getHeight() / 2f, 100);
+            for (Vector4f apple : apples) {
+                renderer.pushMatrix();
 
-            renderer.popMatrix();
+                renderer.translate(apple.x, apple.y);
+                renderer.scale(3);
+                renderer.rotate(apple.z);
+                renderer.translate(-8, -8);
+                renderer.drawImage(texture, 0, 0);
+                apple.z += apple.w * dt;
 
-            renderer.setColor(0.2f, 1, 0.2f);
+                renderer.popMatrix();
+            }
 
-            renderer.pushMatrix();
-            renderer.translate(100, 100);
-            renderer.rotate(45 / 3.1415926f * 180f);
-            renderer.translate(-100, -100);
-            renderer.fillRect(0, 0, 200, 200);
-            renderer.popMatrix();
-
-            renderer.pushMatrix();
-            renderer.scale(0.5f, 1);
-            renderer.translate(100, 100);
-            renderer.scale(25);
-            renderer.rotate((float) glfwGetTime());
-            renderer.translate(-8, -8);
-            renderer.drawImage(texture, 0, 0);
-            renderer.popMatrix();
+            if (apples.size() % 40 == 0) {
+                System.out.println("size = " + apples.size());
+            }
         }
 
     }
