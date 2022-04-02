@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import static org.lwjgl.opengl.GL30.*;
 
 public class VertexArray extends BufferType {
+
+    private final ArrayList<Object> cachedObjects = new ArrayList<>();
+
     public static class VertexArrayLayout {
         private final VertexArray vao;
         private final VertexBuffer vbo;
@@ -48,6 +51,7 @@ public class VertexArray extends BufferType {
     }
 
     public VertexArrayLayout configure(VertexBuffer vbo) {
+        cachedObjects.add(vbo);
         return new VertexArrayLayout(this, vbo);
     }
 
