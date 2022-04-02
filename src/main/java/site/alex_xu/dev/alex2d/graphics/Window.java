@@ -7,6 +7,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL44.glBindTextures;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
@@ -292,6 +295,12 @@ public class Window implements AbstractWindowI {
      * Bind the OpenGL Context of this window
      */
     void bindContext() {
+        if (Graphics.boundContext != this) {
+            if (Graphics.boundContext instanceof BufferedTexture) {
+                ((BufferedTexture) Graphics.boundContext).unbindContext();
+            }
+        }
         glfwMakeContextCurrent(windowHandle);
+        Graphics.boundContext = this;
     }
 }

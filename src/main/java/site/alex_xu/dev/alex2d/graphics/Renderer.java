@@ -11,6 +11,10 @@ public class Renderer extends BaseRenderer {
         super(window);
     }
 
+    public Renderer(BufferedTexture bufferedTexture) {
+        super(bufferedTexture);
+    }
+
     // Stroke
 
     public void strokeLine(Vector2f p1, Vector2f p2) {
@@ -39,6 +43,16 @@ public class Renderer extends BaseRenderer {
 
     public void strokeRect(Vector2f pos, float width, float height) {
         strokeRect(pos.x, pos.y, width, height);
+    }
+
+    // Clear
+
+    public void clear(float brightness) {
+        clear(brightness, 1);
+    }
+
+    public void clear(float brightness, float alpha) {
+        clear(brightness, brightness, brightness, alpha);
     }
 
     // Fill

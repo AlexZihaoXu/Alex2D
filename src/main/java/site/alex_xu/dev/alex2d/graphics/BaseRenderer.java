@@ -70,6 +70,7 @@ abstract class BaseRenderer {
     // Cache
 
     private Window window = null;
+    private BufferedTexture bufferedTexture = null;
     private Matrix4f orthoMatrix = new Matrix4f();
     private float r = 1, g = 1, b = 1, a = 1;
     private final Stack<Matrix4f> matrixStack = new Stack<>();
@@ -77,15 +78,25 @@ abstract class BaseRenderer {
     //
     private void prepareDraw() {
         init();
+        AbstractFrameI frame;
         if (window != null) {
             window.bindContext();
-            glViewport(0, 0, window.getWidth(), window.getHeight());
-            orthoMatrix = new Matrix4f().ortho(0, window.getWidth(), window.getHeight(), 0, -1, 1);
+            frame = window;
+        } else {
+            bufferedTexture.bindContext();
+            frame = bufferedTexture;
         }
+        glViewport(0, 0, frame.getWidth(), frame.getHeight());
+        orthoMatrix = new Matrix4f().ortho(0, frame.getWidth(), frame.getHeight(), 0, -1, 1);
     }
 
     public BaseRenderer(Window window) {
         this.window = window;
+        matrixStack.push(new Matrix4f());
+    }
+
+    public BaseRenderer(BufferedTexture bufferedTexture) {
+        this.bufferedTexture = bufferedTexture;
         matrixStack.push(new Matrix4f());
     }
 
@@ -106,6 +117,14 @@ abstract class BaseRenderer {
 
     public void strokeRect(float x, float y, float w, float h) {
         // TODO
+    }
+
+    // Clear
+
+    public void clear(float r, float g, float b, float a) {
+        prepareDraw();
+        glClearColor(r, g, b, a);
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     // Fill
@@ -174,6 +193,24 @@ abstract class BaseRenderer {
 
             glActiveTexture(GL_TEXTURE0);
             ((Texture) image).bind();
+
+            textureVAO.bind();
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+        } else if (image instanceof BufferedTexture) {
+            prepareDraw();
+
+            textureShader.bind();
+            textureShader.setMat4("windowMat", false, orthoMatrix);
+            textureShader.setMat4("transMat", false, getTransformationsMatrix());
+
+            textureShader.setVec4("rect", dstX, dstY, dstW, dstH);
+            textureShader.setVec4("srcRect", srcX, srcY, srcW, srcH);
+            textureShader.setFloat("texWidth", image.getWidth() + 0.5f);
+            textureShader.setFloat("texHeight", image.getHeight());
+            textureShader.setInt("texture0", 0);
+
+            glActiveTexture(GL_TEXTURE0);
+            ((BufferedTexture) image).bind();
 
             textureVAO.bind();
             glDrawArrays(GL_TRIANGLES, 0, 6);

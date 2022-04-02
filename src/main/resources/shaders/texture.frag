@@ -12,13 +12,17 @@ uniform float texHeight;
 
 vec2 getCoord() {
     return vec2(
-    (srcRect.r + srcRect.b * vPos.x) / texWidth,
-    (srcRect.g + srcRect.a * vPos.y) / texHeight
+    (srcRect.r + srcRect.b * vPos.x) / int(texWidth),
+    (srcRect.g + srcRect.a * vPos.y) / int(texHeight)
     );
 }
 
 void main() {
     vec4 destRect = rect;
     vec2 pos = getCoord();
-    FragColor = texture(texture0, vec2(pos.x, pos.y));
+    if (texWidth - int(texWidth) > 0.25) {
+        FragColor = texture(texture0, vec2(pos.x, 1 - pos.y));
+    } else {
+        FragColor = texture(texture0, pos);
+    }
 }

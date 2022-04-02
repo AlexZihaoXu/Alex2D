@@ -6,6 +6,7 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 
 public final class Graphics {
     private static boolean initialized = false;
+    static Object boundContext = null;
 
     public static void init() {
         if (initialized) {

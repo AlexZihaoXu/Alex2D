@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import site.alex_xu.dev.alex2d.graphics.BufferedTexture;
 import site.alex_xu.dev.alex2d.graphics.Renderer;
 import site.alex_xu.dev.alex2d.graphics.Texture;
 import site.alex_xu.dev.alex2d.graphics.Window;
@@ -42,10 +43,24 @@ public class Main {
 
         ArrayList<Vector4f> apples = new ArrayList<>();
 
+        BufferedTexture bufferedTexture = new BufferedTexture(128, 128);
+
+        Renderer br = new Renderer(bufferedTexture);
 
         while (window.isAlive()) {
             float dt = clock.reset();
             window.render();
+
+            if (apples.size() < 1500) {
+                float angle = (float) (Math.random() * Math.PI * 2);
+                float mag = (float) (Math.random() * 100 + 100);
+                apples.add(new Vector4f(
+                        (float) (Math.random() * window.getWidth()),
+                        (float) (Math.random() * window.getHeight()),
+                        (float) (Math.cos(angle) * mag),
+                        (float) (Math.sin(angle) * mag)
+                ));
+            }
 
             if (timer.elapsedTime() > 2) {
                 count += 1;
@@ -53,44 +68,69 @@ public class Main {
 
                 float now = timer.elapsedTime();
                 fpsList.add(new Vector2f(now, dt));
-                while (now - fpsList.getFirst().x > 3) {
+                while (now - fpsList.getFirst().x > 1) {
                     sum -= fpsList.getFirst().y;
                     count--;
                     fpsList.removeFirst();
                 }
             }
 
-            // System.out.printf("%.10f \n", dt);
-            window.setTitle(String.format("fps: %.2f | time: %5.1f | Samples: %10d", 1 / (sum / count), timer.elapsedTime(), count));
+            window.setTitle("FPS: " + Math.round(1 / (sum / count)));
 
-            glClearColor(0, 0, 0, 1);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            // Background
+            {
+                renderer.clear(1);
 
-            for (int i = 0; i < 40; i++) {
-                apples.add(new Vector4f(
-                        (float) (Math.random() * window.getWidth()),
-                        (float) (Math.random() * window.getHeight()),
-                        (float) (Math.random() * Math.PI * 2),
-                        (float) (Math.random() * 2 + 0.5)
-                ));
+                for (int i = 0; i < apples.size(); i++) {
+                    Vector4f apple = apples.get(i);
+                    renderer.pushMatrix();
+                    renderer.translate(apple.x, apple.y);
+                    renderer.scale(2);
+                    float now = (float) glfwGetTime();
+                    renderer.rotate(((float) ((float) (Math.cos(i) * 100 - (int) (Math.cos(i) * 100)) * Math.PI * 2) + 10 * now * ((float) (Math.cos(i + 0.5) * 50 - (int) (Math.cos(i + 0.5) * 50))) * (i % 2 == 0 ? 1 : -1)));
+                    renderer.drawImage(texture, -8, -10);
+                    renderer.popMatrix();
+
+                    apple.x += apple.z * dt;
+                    apple.y += apple.w * dt;
+
+                    if (apple.x > window.getWidth()) {
+                        apple.z = -Math.abs(apple.z);
+                    }
+                    if (apple.y > window.getHeight()) {
+                        apple.w = -Math.abs(apple.w);
+                    }
+                    if (apple.x < 0) {
+                        apple.z = Math.abs(apple.z);
+                    }
+                    if (apple.y < 0) {
+                        apple.w = Math.abs(apple.w);
+                    }
+                }
             }
 
-            for (Vector4f apple : apples) {
-                renderer.pushMatrix();
-
-                renderer.translate(apple.x, apple.y);
-                renderer.scale(3);
-                renderer.rotate(apple.z);
-                renderer.translate(-8, -8);
-                renderer.drawImage(texture, 0, 0);
-                apple.z += apple.w * dt;
-
-                renderer.popMatrix();
+            {
+                br.pushMatrix();
+                br.translate(bufferedTexture.getWidth() / 2f, bufferedTexture.getHeight() / 2f);
+                br.rotate((float) glfwGetTime() / 10f);
+                br.clear(0, 0.5f);
+                br.setColor(1);
+                br.fillCircle(0, 0, 30);
+                br.setColor(1, 0, 0);
+                br.fillCircle(30, 0, 20);
+                br.setColor(0, 1, 0);
+                br.fillCircle(0, 30, 20);
+                br.popMatrix();
             }
 
-            if (apples.size() % 40 == 0) {
-                System.out.println("size = " + apples.size());
-            }
+            renderer.drawImage(
+                    bufferedTexture,
+                    20, 20,
+                    bufferedTexture.getWidth() * 0.5f, bufferedTexture.getHeight() * 0.5f,
+                    window.getWidth() / 2f - bufferedTexture.getWidth() / 2f,
+                    window.getHeight() / 2f - bufferedTexture.getHeight() / 2f
+                    );
+
         }
 
     }
