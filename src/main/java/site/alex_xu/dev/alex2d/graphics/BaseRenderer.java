@@ -95,7 +95,21 @@ abstract class BaseRenderer {
     }
 
     public void fillRect(float x, float y, float w, float h) {
-        // TODO
+        prepareDraw();
+        trianglesShader.bind();
+        trianglesShader.setVec4("color", r, g, b, a);
+        trianglesShader.setMat4("windowMat", false, orthoMatrix);
+        trianglesShader.setMat4("transMat", false, new Matrix4f());
+
+        trianglesShader.setVec2("pos1", x, y + h);
+        trianglesShader.setVec2("pos2", x + w, y);
+
+        trianglesVAO.bind();
+
+        trianglesShader.setVec2("pos3", x, y);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+        trianglesShader.setVec2("pos3", x + w, y + h);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
     }
 
     // Image
