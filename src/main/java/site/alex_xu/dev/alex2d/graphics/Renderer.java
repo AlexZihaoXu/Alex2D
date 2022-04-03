@@ -84,11 +84,11 @@ public class Renderer extends BaseRenderer {
     // Image
 
     public void drawImage(AbstractFrameI image, float srcX, float srcY, float srcW, float srcH, float dstX, float dstY) {
-        drawImage(image, srcX, srcY, srcW, srcH, dstX, dstY, srcW, srcH);
+        drawImage(image, srcX, srcY, srcW, srcH, dstX, dstY, srcW, srcH, 1, 1, 1, 1);
     }
 
     public void drawImage(AbstractFrameI image, float x, float y) {
-        drawImage(image, 0, 0, image.getWidth(), image.getHeight(), x, y, image.getWidth(), image.getHeight());
+        drawImage(image, 0, 0, image.getWidth(), image.getHeight(), x, y, image.getWidth(), image.getHeight(), 1, 1, 1, 1);
     }
 
     // Transformations

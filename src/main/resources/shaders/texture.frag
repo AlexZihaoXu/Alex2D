@@ -3,12 +3,12 @@
 in vec2 vPos;
 out vec4 FragColor;
 
-uniform vec4 color;
 uniform sampler2D texture0;
 uniform vec4 rect;
 uniform vec4 srcRect;
 uniform float texWidth;
 uniform float texHeight;
+uniform vec4 color;
 
 vec2 getCoord() {
     return vec2(
@@ -20,9 +20,11 @@ vec2 getCoord() {
 void main() {
     vec4 destRect = rect;
     vec2 pos = getCoord();
+    vec4 finalColor;
     if (texWidth - int(texWidth) > 0.25) {
-        FragColor = texture(texture0, vec2(pos.x, 1 - pos.y));
+        finalColor = texture(texture0, vec2(pos.x, 1 - pos.y));
     } else {
-        FragColor = texture(texture0, pos);
+        finalColor = texture(texture0, pos);
     }
+    FragColor = finalColor * color;
 }

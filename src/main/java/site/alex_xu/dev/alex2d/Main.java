@@ -4,9 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import site.alex_xu.dev.alex2d.graphics.BufferedTexture;
-import site.alex_xu.dev.alex2d.graphics.Renderer;
-import site.alex_xu.dev.alex2d.graphics.Texture;
+import site.alex_xu.dev.alex2d.graphics.*;
 import site.alex_xu.dev.alex2d.graphics.Window;
 import site.alex_xu.dev.alex2d.system.Clock;
 
@@ -48,11 +46,11 @@ public class Main {
         ArrayList<Vector4f> apples = new ArrayList<>();
 
         BufferedTexture bufferedTexture = new BufferedTexture(128, 128);
-        BufferedTexture awa = new BufferedTexture(128, 128);
 
         Renderer br = new Renderer(bufferedTexture);
 
-        int frameCount = 0;
+        FontRenderer fontRenderer = new FontRenderer("OpenSans-Regular.ttf", 16);
+
         while (window.isAlive()) {
             float dt = clock.reset();
             window.render();
@@ -81,11 +79,9 @@ public class Main {
                 }
             }
 
-            window.setTitle("FPS: " + Math.round(1 / (sum / count)));
-
             // Background
             {
-                renderer.clear(1);
+                renderer.clear(0.2f);
 
                 for (int i = 0; i < apples.size(); i++) {
                     Vector4f apple = apples.get(i);
@@ -127,15 +123,21 @@ public class Main {
                 br.setColor(0, 1, 0);
                 br.fillCircle(0, 30, 20);
                 br.popMatrix();
+                br.pushMatrix();
+                br.scale(0.5f);
+                br.drawImage(bufferedTexture, 0, 0);
+                br.popMatrix();
             }
 
             renderer.drawImage(
                     bufferedTexture,
-                    20, 20,
-                    bufferedTexture.getWidth() * 0.5f, bufferedTexture.getHeight() * 0.5f,
                     window.getWidth() / 2f - bufferedTexture.getWidth() / 2f,
                     window.getHeight() / 2f - bufferedTexture.getHeight() / 2f
             );
+
+            renderer.setColor(0, 1, 0);
+            fontRenderer.render(renderer, "FPS: " + Math.round(1 / (sum / count)), 0, 0);
+
 
         }
 

@@ -72,7 +72,7 @@ abstract class BaseRenderer {
     private Window window = null;
     private BufferedTexture bufferedTexture = null;
     private Matrix4f orthoMatrix = new Matrix4f();
-    private float r = 1, g = 1, b = 1, a = 1;
+    float r = 1, g = 1, b = 1, a = 1;
     private final Stack<Matrix4f> matrixStack = new Stack<>();
 
     //
@@ -177,44 +177,27 @@ abstract class BaseRenderer {
 
     // Image
 
-    public void drawImage(AbstractFrameI image, float srcX, float srcY, float srcW, float srcH, float dstX, float dstY, float dstW, float dstH) {
-        if (image instanceof Texture) {
-            prepareDraw();
+    public void drawImage(AbstractFrameI image, float srcX, float srcY, float srcW, float srcH, float dstX, float dstY, float dstW, float dstH, float r, float g, float b, float a) {
+        prepareDraw();
 
-            textureShader.bind();
-            textureShader.setMat4("windowMat", false, orthoMatrix);
-            textureShader.setMat4("transMat", false, getTransformationsMatrix());
+        textureShader.bind();
+        textureShader.setMat4("windowMat", false, orthoMatrix);
+        textureShader.setMat4("transMat", false, getTransformationsMatrix());
+        textureShader.setVec4("rect", dstX, dstY, dstW, dstH);
+        textureShader.setVec4("srcRect", srcX, srcY, srcW, srcH);
+        textureShader.setVec4("color", r, g, b, a);
+        textureShader.setFloat("texWidth", image.getWidth() + (image instanceof BufferedTexture ? 0.5f : 0));
+        textureShader.setFloat("texHeight", image.getHeight());
+        textureShader.setInt("texture0", 0);
 
-            textureShader.setVec4("rect", dstX, dstY, dstW, dstH);
-            textureShader.setVec4("srcRect", srcX, srcY, srcW, srcH);
-            textureShader.setFloat("texWidth", image.getWidth());
-            textureShader.setFloat("texHeight", image.getHeight());
-            textureShader.setInt("texture0", 0);
-
-            glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0);
+        if (image instanceof BufferedTexture)
+        ((BufferedTexture) image).bind();
+        else if (image instanceof Texture)
             ((Texture) image).bind();
 
-            textureVAO.bind();
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-        } else if (image instanceof BufferedTexture) {
-            prepareDraw();
-
-            textureShader.bind();
-            textureShader.setMat4("windowMat", false, orthoMatrix);
-            textureShader.setMat4("transMat", false, getTransformationsMatrix());
-
-            textureShader.setVec4("rect", dstX, dstY, dstW, dstH);
-            textureShader.setVec4("srcRect", srcX, srcY, srcW, srcH);
-            textureShader.setFloat("texWidth", image.getWidth() + 0.5f);
-            textureShader.setFloat("texHeight", image.getHeight());
-            textureShader.setInt("texture0", 0);
-
-            glActiveTexture(GL_TEXTURE0);
-            ((BufferedTexture) image).bind();
-
-            textureVAO.bind();
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-        }
+        textureVAO.bind();
+        glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
     // Transformations
