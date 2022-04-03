@@ -61,6 +61,12 @@ public class FontRenderer { // TODO
         this.size = size;
     }
 
+    public FontRenderer(int size) {
+        this.font = new Font(Font.SANS_SERIF, Font.PLAIN, size);
+        this.size = size;
+        this.path = null;
+    }
+
     public TreeMap<Integer, TextAtlas> getCacheMap() {
         cache.putIfAbsent(path, new TreeMap<>());
         cache.get(path).putIfAbsent(size, new TreeMap<>());

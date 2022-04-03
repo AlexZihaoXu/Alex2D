@@ -13,9 +13,11 @@ import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Random;
 
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL11.*;
@@ -58,12 +60,14 @@ public class Main {
             if (apples.size() < 1500) {
                 float angle = (float) (Math.random() * Math.PI * 2);
                 float mag = (float) (Math.random() * 100 + 100);
-                apples.add(new Vector4f(
-                        (float) (Math.random() * window.getWidth()),
-                        (float) (Math.random() * window.getHeight()),
-                        (float) (Math.cos(angle) * mag),
-                        (float) (Math.sin(angle) * mag)
-                ));
+                for (int i = 0; i < 10; i++) {
+                    apples.add(new Vector4f(
+                            (float) (Math.random() * window.getWidth()),
+                            (float) (Math.random() * window.getHeight()),
+                            (float) (Math.cos(angle) * mag),
+                            (float) (Math.sin(angle) * mag)
+                    ));
+                }
             }
 
             if (timer.elapsedTime() > 2) {
@@ -136,7 +140,14 @@ public class Main {
             );
 
             renderer.setColor(0, 1, 0);
-            fontRenderer.render(renderer, "FPS: " + Math.round(1 / (sum / count)), 0, 0);
+            fontRenderer.render(renderer, "PS: " + Math.round(1 / (sum / count)), 0, 0);
+            fontRenderer.render(renderer, "pple ount: " + apples.size(), 0, 20);
+//
+//            byte[] array = new byte[32]; // length is bounded by 7
+//            new Random().nextBytes(array);
+//            String generatedString = new String(array, Charset.forName("UTF-8"));
+//            fontRenderer.render(renderer, "Random Characters: " + generatedString, 0, 40);
+//            fontRenderer.render(renderer, "Chinese: 你好", 0, 60);
 
 
         }

@@ -1,7 +1,7 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
-
 group 'site.alex-xu.dev.alex2d'
 version '1.0-SNAPSHOT'
 
@@ -10,7 +10,16 @@ repositories {
 }
 
 
-project.ext.lwjglVersion = "3.3.1"
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'site.alex_xu.dev.alex2d.Main'
+        )
+    }
+}
+
+project.ext.lwjglVersion = "3.3.0"
 
 dependencies {
 
@@ -23,7 +32,6 @@ dependencies {
 
     implementation "org.lwjgl:lwjgl"
     implementation "org.lwjgl:lwjgl-glfw"
-    implementation "org.lwjgl:lwjgl-jawt"
     implementation "org.lwjgl:lwjgl-openal"
     implementation "org.lwjgl:lwjgl-opengl"
     implementation "org.lwjgl:lwjgl-stb"
@@ -59,11 +67,11 @@ dependencies {
     implementation "org.lwjgl:lwjgl-opengl::natives-macos"
     implementation "org.lwjgl:lwjgl-stb::natives-macos"
 
-    implementation "org.lwjgl:lwjgl::natives-windows"
-    implementation "org.lwjgl:lwjgl-glfw::natives-windows"
-    implementation "org.lwjgl:lwjgl-openal::natives-windows"
-    implementation "org.lwjgl:lwjgl-opengl::natives-windows"
-    implementation "org.lwjgl:lwjgl-stb::natives-windows"
+//    implementation "org.lwjgl:lwjgl::natives-windows"
+//    implementation "org.lwjgl:lwjgl-glfw::natives-windows"
+//    implementation "org.lwjgl:lwjgl-openal::natives-windows"
+//    implementation "org.lwjgl:lwjgl-opengl::natives-windows"
+//    implementation "org.lwjgl:lwjgl-stb::natives-windows"
 //
 //    implementation "org.lwjgl:lwjgl::natives-windows-arm64"
 //    implementation "org.lwjgl:lwjgl-glfw::natives-windows-arm64"
@@ -71,11 +79,11 @@ dependencies {
 //    implementation "org.lwjgl:lwjgl-opengl::natives-windows-arm64"
 //    implementation "org.lwjgl:lwjgl-stb::natives-windows-arm64"
 
-    implementation "org.lwjgl:lwjgl::natives-windows-x86"
-    implementation "org.lwjgl:lwjgl-glfw::natives-windows-x86"
-    implementation "org.lwjgl:lwjgl-openal::natives-windows-x86"
-    implementation "org.lwjgl:lwjgl-opengl::natives-windows-x86"
-    implementation "org.lwjgl:lwjgl-stb::natives-windows-x86"
+//    implementation "org.lwjgl:lwjgl::natives-windows-x86"
+//    implementation "org.lwjgl:lwjgl-glfw::natives-windows-x86"
+//    implementation "org.lwjgl:lwjgl-openal::natives-windows-x86"
+//    implementation "org.lwjgl:lwjgl-opengl::natives-windows-x86"
+//    implementation "org.lwjgl:lwjgl-stb::natives-windows-x86"
 }
 
 test {
