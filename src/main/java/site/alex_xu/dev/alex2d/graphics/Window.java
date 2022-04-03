@@ -1,19 +1,11 @@
 package site.alex_xu.dev.alex2d.graphics;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractWindowI;
-import site.alex_xu.dev.alex2d.system.Clock;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL44.glBindTextures;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
@@ -54,6 +46,7 @@ public class Window implements AbstractWindowI {
         glfwWindowHint(GLFW_VISIBLE, isVisible ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
 
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
         if (windowHandle == NULL) {
@@ -66,7 +59,7 @@ public class Window implements AbstractWindowI {
         glfwSwapInterval(isVSync ? 1 : 0);
 
         glfwSetWindowSizeLimits(windowHandle, 250, 250, GLFW_DONT_CARE, GLFW_DONT_CARE);
-        glfwSetWindowPosCallback(windowHandle, (window, x, y) -> {
+        glfwSetFramebufferSizeCallback(windowHandle, (window, x, y) -> {
             this.x = x;
             this.y = y;
         });

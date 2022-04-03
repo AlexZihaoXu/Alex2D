@@ -51,7 +51,7 @@ public class Main {
 
         Renderer br = new Renderer(bufferedTexture);
 
-        FontRenderer fontRenderer = new FontRenderer("OpenSans-Regular.ttf", 16);
+        FontRenderer fontRenderer = new FontRenderer(16);
 
         while (window.isAlive()) {
             float dt = clock.reset();
@@ -140,14 +140,14 @@ public class Main {
             );
 
             renderer.setColor(0, 1, 0);
-            fontRenderer.render(renderer, "PS: " + Math.round(1 / (sum / count)), 0, 0);
-            fontRenderer.render(renderer, "pple ount: " + apples.size(), 0, 20);
-//
-//            byte[] array = new byte[32]; // length is bounded by 7
-//            new Random().nextBytes(array);
-//            String generatedString = new String(array, Charset.forName("UTF-8"));
-//            fontRenderer.render(renderer, "Random Characters: " + generatedString, 0, 40);
-//            fontRenderer.render(renderer, "Chinese: 你好", 0, 60);
+            fontRenderer.render(renderer, "FPS: " + Math.round(1 / (sum / count)), 0, 0);
+            fontRenderer.render(renderer, "People Count: " + apples.size(), 0, 20);
+
+            byte[] array = new byte[32]; // length is bounded by 7
+            new Random().nextBytes(array);
+            String generatedString = new String(array, Charset.forName("UTF-8"));
+            fontRenderer.render(renderer, "Random Characters: " + generatedString, 0, 40);
+            fontRenderer.render(renderer, "Chinese: 你好", 0, 60);
 
 
         }

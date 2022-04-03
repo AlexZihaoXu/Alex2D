@@ -19,6 +19,7 @@ public final class Graphics {
         if (initialized) {
             return;
         }
+        System.setProperty("java.awt.headless", "true");
         GLFWErrorCallback.createPrint(System.err).set();
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW!");
