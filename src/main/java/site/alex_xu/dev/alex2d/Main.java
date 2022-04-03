@@ -55,10 +55,10 @@ public class Main {
             float dt = clock.reset();
             window.render();
 
-            if (apples.size() < 1500) {
+            if (apples.size() < 15000) {
                 float angle = (float) (Math.random() * Math.PI * 2);
                 float mag = (float) (Math.random() * 100 + 100);
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 20; i++) {
                     apples.add(new Vector4f(
                             (float) (Math.random() * window.getWidth()),
                             (float) (Math.random() * window.getHeight()),
