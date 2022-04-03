@@ -60,13 +60,18 @@ public class VertexArray extends BufferType {
         freedVAOs.add(id);
     }
 
+    private static VertexArray boundVAO = null;
     @Override
     public void bind() {
-        glBindVertexArray(id);
+        if (boundVAO != this) {
+            glBindVertexArray(id);
+            boundVAO = this;
+        }
     }
 
     @Override
     protected void unbind() {
         glBindVertexArray(0);
+        boundVAO = null;
     }
 }

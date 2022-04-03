@@ -31,12 +31,18 @@ abstract class ImageType implements AbstractFrameI {
 
     abstract void onDispose();
 
+    private static ImageType boundImageType = null;
+
     void bind() {
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        if (boundImageType != this) {
+            glBindTexture(GL_TEXTURE_2D, textureID);
+            boundImageType = this;
+        }
     }
 
     void unbind() {
         glBindTexture(GL_TEXTURE_2D, 0);
+        boundImageType = null;
     }
 
     boolean isFreed() {

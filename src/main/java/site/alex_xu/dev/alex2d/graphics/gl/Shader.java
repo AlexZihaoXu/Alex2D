@@ -1,7 +1,7 @@
 package site.alex_xu.dev.alex2d.graphics.gl;
 
 import org.apache.commons.io.IOUtils;
-import org.joml.Matrix4f;
+import org.joml.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -44,39 +44,91 @@ public class Shader extends Freeable {
     }
 
     // Setters
+
+    private final HashMap<String, Integer> setIntCache = new HashMap<>();
+
     public Shader setInt(String uniformName, int value) {
-        bind();
-        glUniform1i(getUniformLocation(uniformName), value);
+        setIntCache.putIfAbsent(uniformName, Integer.MAX_VALUE);
+        if (setIntCache.get(uniformName) != value) {
+            bind();
+            glUniform1i(getUniformLocation(uniformName), value);
+            setIntCache.put(uniformName, value);
+        }
         return this;
     }
+
+    private final HashMap<String, Float> setFloatCache = new HashMap<>();
 
     public Shader setFloat(String uniformName, float value) {
-        bind();
-        glUniform1f(getUniformLocation(uniformName), value);
+        setFloatCache.putIfAbsent(uniformName, Float.MAX_VALUE);
+        if (setFloatCache.get(uniformName) != value) {
+            bind();
+            glUniform1f(getUniformLocation(uniformName), value);
+            setFloatCache.put(uniformName, value);
+        }
         return this;
     }
+
+    private final HashMap<String, Vector2f> setVec2Cache = new HashMap<>();
 
     public Shader setVec2(String uniformName, float x, float y) {
-        bind();
-        glUniform2f(getUniformLocation(uniformName), x, y);
+        setVec2Cache.putIfAbsent(uniformName, new Vector2f(Float.MAX_VALUE, Float.MAX_VALUE));
+        Vector2f vec = setVec2Cache.get(uniformName);
+        if (vec.x != x || vec.y != y) {
+            bind();
+            glUniform2f(getUniformLocation(uniformName), x, y);
+            vec.x = x;
+            vec.y = y;
+        }
         return this;
     }
+
+    private final HashMap<String, Vector3f> setVec3Cache = new HashMap<>();
 
     public Shader setVec3(String uniformName, float x, float y, float z) {
-        bind();
-        glUniform3f(getUniformLocation(uniformName), x, y, z);
+        setVec3Cache.putIfAbsent(uniformName, new Vector3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE));
+        Vector3f vec = setVec3Cache.get(uniformName);
+        if (vec.x != x || vec.y != y || vec.z != z) {
+            bind();
+            glUniform3f(getUniformLocation(uniformName), x, y, z);
+            vec.x = x;
+            vec.y = y;
+            vec.z = z;
+        }
         return this;
     }
+
+    private final HashMap<String, Vector4f> setVec4Cache = new HashMap<>();
 
     public Shader setVec4(String uniformName, float x, float y, float z, float w) {
-        bind();
-        glUniform4f(getUniformLocation(uniformName), x, y, z, w);
+        setVec4Cache.putIfAbsent(uniformName, new Vector4f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE));
+        Vector4f vec = setVec4Cache.get(uniformName);
+        if (vec.x != x || vec.y != y || vec.z != z || vec.w != w) {
+            bind();
+            glUniform4f(getUniformLocation(uniformName), x, y, z, w);
+            vec.x = x;
+            vec.y = y;
+            vec.z = z;
+            vec.w = w;
+        }
         return this;
     }
 
+    private final HashMap<String, Matrix4f> setMat4Cache = new HashMap<>();
+
     public Shader setMat4(String uniformName, boolean transpose, Matrix4f mat4) {
-        bind();
-        glUniformMatrix4fv(getUniformLocation(uniformName), transpose, mat4.get(new float[16]));
+        setMat4Cache.putIfAbsent(uniformName, new Matrix4f(
+                Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE,
+                Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE,
+                Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE,
+                Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE
+        ));
+        Matrix4f mat = setMat4Cache.get(uniformName);
+        if (!mat4.equals(mat)) {
+            bind();
+            glUniformMatrix4fv(getUniformLocation(uniformName), transpose, mat4.get(new float[16]));
+            mat.set(mat4);
+        }
         return this;
     }
 
@@ -179,12 +231,18 @@ public class Shader extends Freeable {
         }
     }
 
+    private static Shader boundShader = null;
+
     public void bind() {
-        glUseProgram(programID);
+        if (boundShader != this) {
+            glUseProgram(programID);
+            boundShader = this;
+        }
     }
 
     public void unbind() {
         glUseProgram(0);
+        boundShader = null;
     }
 
     @Override

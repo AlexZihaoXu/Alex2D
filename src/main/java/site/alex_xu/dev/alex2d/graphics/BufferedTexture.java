@@ -50,13 +50,18 @@ public class BufferedTexture extends ImageType {
 
 
     void bindContext() {
-        glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
-        glViewport(0, 0, width, height);
-        Graphics.boundContext = this;
+        if (Graphics.boundContext != this) {
+            glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
+            glViewport(0, 0, width, height);
+            Graphics.boundContext = this;
+        }
     }
 
     void unbindContext() {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        if (Graphics.boundContext == this) {
+            Graphics.boundContext = null;
+        }
     }
 
     @Override

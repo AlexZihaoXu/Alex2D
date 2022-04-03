@@ -54,6 +54,7 @@ public class Window implements AbstractWindowI {
         }
 
         bindContext();
+        glfwMakeContextCurrent(windowHandle);
         GL.createCapabilities();
         setVSyncEnabled(isVSync);
         glfwSwapInterval(isVSync ? 1 : 0);
@@ -297,8 +298,8 @@ public class Window implements AbstractWindowI {
             if (Graphics.boundContext instanceof BufferedTexture) {
                 ((BufferedTexture) Graphics.boundContext).unbindContext();
             }
+            glfwMakeContextCurrent(windowHandle);
+            Graphics.boundContext = this;
         }
-        glfwMakeContextCurrent(windowHandle);
-        Graphics.boundContext = this;
     }
 }
