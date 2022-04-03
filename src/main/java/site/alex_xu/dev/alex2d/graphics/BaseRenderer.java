@@ -74,6 +74,7 @@ abstract class BaseRenderer {
     private Matrix4f orthoMatrix = new Matrix4f();
     float r = 1, g = 1, b = 1, a = 1;
     private final Stack<Matrix4f> matrixStack = new Stack<>();
+    private FontRenderer fontRenderer;
 
     //
     private void prepareDraw() {
@@ -125,6 +126,52 @@ abstract class BaseRenderer {
         prepareDraw();
         glClearColor(r, g, b, a);
         glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    // Text
+
+    public void setFont(String path, int size) {
+        this.fontRenderer = new FontRenderer(path, size);
+    }
+
+    public void setFont(int size) {
+        this.fontRenderer = new FontRenderer(size);
+    }
+
+    public void setFont(String path) {
+        this.fontRenderer = new FontRenderer(path, getFontRenderer().size);
+    }
+
+    public void setSize(int size) {
+        this.fontRenderer = new FontRenderer(getFontRenderer().path, size);
+    }
+
+    public int getFontSize() {
+        return getFontRenderer().size;
+    }
+
+    public String getFontPath() {
+        return getFontRenderer().path;
+    }
+
+    private FontRenderer getFontRenderer() {
+        if (this.fontRenderer == null) {
+            this.fontRenderer = new FontRenderer(16);
+        }
+        return fontRenderer;
+    }
+
+    public void drawText(String text, float x, float y) {
+
+        this.getFontRenderer().render(this, text, x, y);
+    }
+
+    public float getTextWidth(String text) {
+        float w = 0;
+        for (int i = 0; i < text.length(); i++) {
+            w += getFontRenderer().charWidth(text.charAt(i));
+        }
+        return w;
     }
 
     // Fill
@@ -192,7 +239,7 @@ abstract class BaseRenderer {
 
         glActiveTexture(GL_TEXTURE0);
         if (image instanceof BufferedTexture)
-        ((BufferedTexture) image).bind();
+            ((BufferedTexture) image).bind();
         else if (image instanceof Texture)
             ((Texture) image).bind();
 

@@ -51,8 +51,6 @@ public class Main {
 
         Renderer br = new Renderer(bufferedTexture);
 
-        FontRenderer fontRenderer = new FontRenderer(16);
-
         while (window.isAlive()) {
             float dt = clock.reset();
             window.render();
@@ -139,16 +137,23 @@ public class Main {
                     window.getHeight() / 2f - bufferedTexture.getHeight() / 2f
             );
 
+            renderer.setFont("OpenSans-Regular.ttf", 20);
             renderer.setColor(0, 1, 0);
-            fontRenderer.render(renderer, "FPS: " + Math.round(1 / (sum / count)), 0, 0);
-            fontRenderer.render(renderer, "People Count: " + apples.size(), 0, 20);
+            renderer.drawText( "FPS: " + Math.round(1 / (sum / count)), 0, 0);
+            renderer.drawText( "People Count: " + apples.size(), 0, 20);
 
             byte[] array = new byte[32]; // length is bounded by 7
             new Random().nextBytes(array);
             String generatedString = new String(array, Charset.forName("UTF-8"));
-            fontRenderer.render(renderer, "Random Characters: " + generatedString, 0, 40);
-            fontRenderer.render(renderer, "Chinese: 你好", 0, 60);
 
+            renderer.setFont(16);
+            renderer.drawText( "Random Characters: " + generatedString, 0, 40);
+            renderer.drawText( "Chinese: 你好", 0, 60);
+
+            renderer.setFont("OpenSans-Regular.ttf");
+            renderer.setSize((int) (Math.cos(glfwGetTime() * 10) * 4) + 80);
+            renderer.setColor(1, 0, 1);
+            renderer.drawText("Hello world", window.getWidth() / 2f - renderer.getTextWidth("Hello world") / 2f, window.getHeight() / 2f - renderer.getFontSize() / 2f);
 
         }
 

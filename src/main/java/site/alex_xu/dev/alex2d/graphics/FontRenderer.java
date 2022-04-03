@@ -48,11 +48,12 @@ class TextAtlas {
     int[][] posMap = new int[8][3];
 }
 
-public class FontRenderer { // TODO
+class FontRenderer { // TODO
 
-    private final Font font;
-    private final String path;
-    private final int size;
+    final Font font;
+    final String path;
+    final int size;
+    private static final TreeMap<Integer, Font> defaultFonts = new TreeMap<>();
     private static final HashMap<String, TreeMap<Integer, TreeMap<Integer, TextAtlas>>> cache = new HashMap<>();
 
     public FontRenderer(String path, int size) {
@@ -62,7 +63,8 @@ public class FontRenderer { // TODO
     }
 
     public FontRenderer(int size) {
-        this.font = new Font(Font.SANS_SERIF, Font.PLAIN, size);
+        defaultFonts.computeIfAbsent(size, s -> new Font(Font.SANS_SERIF, Font.PLAIN, s));
+        this.font = defaultFonts.get(size);
         this.size = size;
         this.path = null;
     }
@@ -73,7 +75,7 @@ public class FontRenderer { // TODO
         return cache.get(path).get(size);
     }
 
-    public void render(Renderer renderer, String text, float x, float y) {
+    public void render(BaseRenderer renderer, String text, float x, float y) {
         int offset = 0;
         for (int i = 0; i < text.length(); i++) {
             offset += renderChar(renderer, text.charAt(i), x + offset, y);
@@ -143,7 +145,7 @@ public class FontRenderer { // TODO
         return atlas.posMap[c % 8][1];
     }
 
-    int renderChar(Renderer renderer, char c, float x, float y) {
+    int renderChar(BaseRenderer renderer, char c, float x, float y) {
 
         TreeMap<Integer, TextAtlas> cache = getCacheMap();
         int index = (int) (c) / 8;
