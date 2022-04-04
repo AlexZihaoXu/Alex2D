@@ -1,14 +1,14 @@
 package site.alex_xu.dev.alex2d.graphics;
 
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryStack;
-import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractFrameI;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL;
@@ -18,13 +18,26 @@ import static org.lwjgl.stb.STBImage.*;
 
 public class Texture extends ImageType {
 
+    private static final HashMap<String, Texture> textureCache = new HashMap<>();
+
+    public static Texture getFromResources(String path) {
+        if (!textureCache.containsKey(path)) {
+            try {
+                textureCache.put(path, new Texture(IOUtils.toByteArray(Objects.requireNonNull(Texture.class.getClassLoader().getResourceAsStream(path)))));
+            } catch (IOException e) {
+                throw new RuntimeException("Texture file not found: " + path);
+            }
+        }
+        return textureCache.get(path);
+    }
+
     public Texture(byte[] data, int magFilter, int minFilter) {
 
         try (MemoryStack memoryStack = MemoryStack.stackPush()) {
             IntBuffer b_width = memoryStack.mallocInt(1);
             IntBuffer b_height = memoryStack.mallocInt(1);
             IntBuffer b_channels = memoryStack.mallocInt(1);
-            ByteBuffer b_data = memoryStack.malloc(data.length);
+            ByteBuffer b_data = BufferUtils.createByteBuffer(data.length);
             b_data.put(data);
             b_data.flip();
 
@@ -51,6 +64,7 @@ public class Texture extends ImageType {
             glGenerateMipmap(GL_TEXTURE_2D);
 
             stbi_image_free(b_img);
+            b_data.clear();
         }
 
     }

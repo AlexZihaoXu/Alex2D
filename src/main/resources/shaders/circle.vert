@@ -10,5 +10,5 @@ out vec2 f_pos;
 void main() {
     radius = circle.z;
     f_pos = pos;
-    gl_Position = windowMat * transMat * vec4(pos * radius + circle.xy, 0, 1);
+    gl_Position = windowMat * transMat * vec4(pos * 0.5 * radius + circle.xy, 0, 1);
 }

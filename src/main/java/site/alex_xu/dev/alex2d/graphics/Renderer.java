@@ -24,11 +24,6 @@ public class Renderer extends BaseRenderer {
     public void strokeTriangle(Vector2f p1, Vector2f p2, Vector2f p3) {
         strokeTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
     }
-
-    public void strokeCircle(Vector2f center, float radius) {
-        strokeCircle(center.x, center.y, radius);
-    }
-
     public void strokeRect(Rectangle rect) {
         strokeRect(rect.x, rect.y, rect.width, rect.height);
     }
@@ -53,6 +48,10 @@ public class Renderer extends BaseRenderer {
 
     public void clear(float brightness, float alpha) {
         clear(brightness, brightness, brightness, alpha);
+    }
+
+    public void clear(float r, float g, float b) {
+        clear(r, g, b, 1);
     }
 
     // Fill

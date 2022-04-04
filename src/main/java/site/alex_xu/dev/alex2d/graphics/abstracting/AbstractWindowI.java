@@ -21,7 +21,7 @@ public interface AbstractWindowI extends AbstractBufferI, AbstractPositionI, Abs
 
     // Icon
 
-    void setIcon(); // TODO: setIcon parameter type undefined
+    void setIcon(String path); // TODO: setIcon parameter type undefined
 
     // Resizable
 

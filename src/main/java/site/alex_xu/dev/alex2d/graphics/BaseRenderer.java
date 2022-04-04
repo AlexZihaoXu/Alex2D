@@ -5,7 +5,6 @@ import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractFrameI;
 import site.alex_xu.dev.alex2d.graphics.gl.Shader;
 import site.alex_xu.dev.alex2d.graphics.gl.VertexArray;
 import site.alex_xu.dev.alex2d.graphics.gl.VertexBuffer;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Stack;
 
@@ -75,6 +74,7 @@ abstract class BaseRenderer {
     float r = 1, g = 1, b = 1, a = 1;
     private final Stack<Matrix4f> matrixStack = new Stack<>();
     private FontRenderer fontRenderer;
+    private float strokeWidth = 1.0f;
 
     //
     private void prepareDraw() {
@@ -105,19 +105,30 @@ abstract class BaseRenderer {
     // Stroke
 
     public void strokeLine(float x1, float y1, float x2, float y2) {
-        // TODO
+        float x = x1;
+        float y = y1;
+        float angle = (float) Math.atan2(y2 - y1, x2 - x1);
+        float distance = (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+        pushMatrix();
+        translate(x, y);
+        rotate(angle);
+        fillCircle(0, 0, strokeWidth);
+        fillRect(0, -strokeWidth / 2f, distance, strokeWidth);
+        fillCircle(distance, 0, strokeWidth);
+        popMatrix();
     }
 
     public void strokeTriangle(float x1, float y1, float x2, float y2, float x3, float y3) {
-        // TODO
-    }
-
-    public void strokeCircle(float x, float y, float radius) {
-        // TODO
+        strokeLine(x1, y1, x2, y2);
+        strokeLine(x2, y2, x3, y3);
+        strokeLine(x3, y3, x1, y1);
     }
 
     public void strokeRect(float x, float y, float w, float h) {
-        // TODO
+        strokeLine(x, y, x + w, y);
+        strokeLine(x, y + h, x + w, y + h);
+        strokeLine(x, y, x, y + h);
+        strokeLine(x + w, y, x + w, y + h);
     }
 
     // Clear
@@ -238,8 +249,9 @@ abstract class BaseRenderer {
         textureShader.setInt("texture0", 0);
 
         glActiveTexture(GL_TEXTURE0);
-        if (image instanceof BufferedTexture)
+        if (image instanceof BufferedTexture) {
             ((BufferedTexture) image).bind();
+        }
         else if (image instanceof Texture)
             ((Texture) image).bind();
 
@@ -287,4 +299,14 @@ abstract class BaseRenderer {
         this.a = a;
     }
 
+    public void setStrokeWidth(float w) {
+        strokeWidth = w;
+    }
+
+    // Getters
+
+
+    public float getStrokeWidth() {
+        return strokeWidth;
+    }
 }

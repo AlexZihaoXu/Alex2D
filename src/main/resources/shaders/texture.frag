@@ -26,5 +26,7 @@ void main() {
     } else {
         finalColor = texture(texture0, pos);
     }
+    if (finalColor.a < 1.0 / 255.0)
+        discard;
     FragColor = finalColor * color;
 }

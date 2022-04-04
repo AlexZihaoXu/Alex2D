@@ -12,8 +12,8 @@ void main() {
     if (distance > 1) {
         discard;
     }
-    float delta = fwidth(distance);
-    float alpha = 1 - smoothstep(0.45-delta, 0.45, distance);
-    vec4 fColor = vec4(color.rgb, color.a * alpha);
-    FragColor = fColor;
+//    float delta = fwidth(distance);
+//    float alpha = 1 - smoothstep(1 / 1.25 -delta, 1 / 1.25, distance);
+//    vec4 fColor = vec4(color.rgb, color.a * alpha);
+    FragColor = color;
 }

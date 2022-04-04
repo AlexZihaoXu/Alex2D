@@ -1,11 +1,24 @@
 package site.alex_xu.dev.alex2d.graphics;
 
+import org.apache.commons.io.IOUtils;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractWindowI;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.util.Objects;
+
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
@@ -46,6 +59,8 @@ public class Window implements AbstractWindowI {
         glfwWindowHint(GLFW_VISIBLE, isVisible ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_SAMPLES, 1);
         glfwWindowHint(GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW_FALSE);
 
         windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
@@ -147,6 +162,8 @@ public class Window implements AbstractWindowI {
     public void render() {
         Graphics.gc();
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
 
@@ -212,9 +229,29 @@ public class Window implements AbstractWindowI {
      * Set an icon for this window.
      */
     @Override
-    public void setIcon() {
-        throw new NotImplementedException();
-        // TODO
+    public void setIcon(String path) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer comp = stack.mallocInt(1);
+            IntBuffer w = stack.mallocInt(1);
+            IntBuffer h = stack.mallocInt(1);
+            byte[] bytes = IOUtils.toByteArray(Objects.requireNonNull(Window.class.getClassLoader().getResourceAsStream(path)));
+            ByteBuffer data = stack.malloc(bytes.length);
+            data.put(bytes);
+            data.flip();
+
+
+            stbi_set_flip_vertically_on_load(false);
+            ByteBuffer image = stbi_load_from_memory(data, w, h, comp, 4);
+            GLFWImage img = GLFWImage.malloc();
+            assert image != null;
+            img.set(w.get(), h.get(), image);
+            GLFWImage.Buffer imagesBuf = GLFWImage.malloc(1);
+            imagesBuf.put(0, img);
+            glfwSetWindowIcon(windowHandle, imagesBuf);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Unable to find icon file: " + path);
+        }
     }
 
     /**
