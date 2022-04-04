@@ -1,11 +1,14 @@
 package site.alex_xu.dev.alex2d.sounds;
 
+import site.alex_xu.dev.alex2d.graphics.gl.Freeable;
+
 import static org.lwjgl.openal.AL10.*;
 
-public class SoundSource {
+public class SoundSource extends Freeable {
     final int sourceId;
 
     public SoundSource(boolean loop, boolean relative) {
+        AudioMaster.init();
         this.sourceId = alGenSources();
         if (loop) {
             alSourcei(sourceId, AL_LOOPING, AL_TRUE);
@@ -28,8 +31,12 @@ public class SoundSource {
         alSource3f(sourceId, AL_VELOCITY, x, y, z);
     }
 
-    public void setGain(float gain) {
-        alSourcef(sourceId, AL_GAIN, gain);
+    public void setVolume(float volume) {
+        alSourcef(sourceId, AL_GAIN, volume);
+    }
+
+    public void setPitch(float pitch) {
+        alSourcef(sourceId, AL_PITCH, pitch);
     }
 
     public void play() {
@@ -44,8 +51,10 @@ public class SoundSource {
         alSourceStop(sourceId);
     }
 
-    public void free() {
+    @Override
+    protected void onDispose() {
         stop();
         alDeleteSources(sourceId);
     }
+
 }

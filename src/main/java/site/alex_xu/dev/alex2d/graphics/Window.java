@@ -339,4 +339,8 @@ public class Window implements AbstractWindowI {
             Graphics.boundContext = this;
         }
     }
+
+    public long getID() {
+        return windowHandle;
+    }
 }

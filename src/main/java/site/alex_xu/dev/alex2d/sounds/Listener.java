@@ -4,8 +4,15 @@ import static org.lwjgl.openal.AL10.*;
 
 public class Listener {
     float x, y, z;
+    private static Listener instance = null;
 
-    public Listener(float x, float y, float z) {
+    public static Listener get() {
+        if (instance == null)
+            instance = new Listener(0, 0, 0);
+        return instance;
+    }
+    private Listener(float x, float y, float z) {
+        AudioMaster.init();
         this.x = x;
         this.y = y;
         this.z = z;
