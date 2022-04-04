@@ -6,6 +6,7 @@ import static org.lwjgl.openal.AL10.*;
 
 public class SoundSource extends Freeable {
     final int sourceId;
+    Sound sound;
 
     public SoundSource(boolean loop, boolean relative) {
         AudioMaster.init();
@@ -20,6 +21,10 @@ public class SoundSource extends Freeable {
 
     public void setSound(Sound sound) {
         stop();
+        if (this.sound != null) {
+            this.sound.sources.remove(this);
+        }
+        sound.sources.add(this);
         alSourcei(sourceId, AL_BUFFER, sound.bufferId);
     }
 
@@ -53,8 +58,7 @@ public class SoundSource extends Freeable {
 
     @Override
     protected void onDispose() {
-        stop();
-        alDeleteSources(sourceId);
+        freedSoundSources.add(sourceId);
     }
 
 }

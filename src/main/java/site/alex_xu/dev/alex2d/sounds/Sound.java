@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 
 import static org.lwjgl.openal.AL10.*;
@@ -21,6 +22,7 @@ public class Sound extends Freeable {
     final int bufferId;
 
     private static final HashMap<String, Sound> cache = new HashMap<>();
+    final HashSet<SoundSource> sources = new HashSet<>();
 
     public static Sound getFromResources(String path) {
         if (!cache.containsKey(path)) {
