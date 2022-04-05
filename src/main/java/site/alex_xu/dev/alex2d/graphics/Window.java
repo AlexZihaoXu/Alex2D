@@ -5,12 +5,8 @@ import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractWindowI;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Objects;
@@ -90,6 +86,22 @@ public class Window implements AbstractWindowI {
             isFocused = focused;
         });
 
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+
+    public void dispose() {
+        if (disposed)
+            return;
+
+        glfwFreeCallbacks(windowHandle);
+        if (windowHandle != 0)
+            glfwDestroyWindow(windowHandle);
+        Objects.requireNonNull(glfwSetErrorCallback(null)).free();
+        glfwTerminate();
+
+        disposed= true;
     }
 
     /**
@@ -162,8 +174,6 @@ public class Window implements AbstractWindowI {
     public void render() {
         Graphics.gc();
 
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glfwSwapBuffers(windowHandle);
         glfwPollEvents();
 
@@ -340,7 +350,15 @@ public class Window implements AbstractWindowI {
         }
     }
 
-    public long getID() {
+    public long getHandle() {
         return windowHandle;
+    }
+
+
+    private boolean disposed = false;
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        dispose();
     }
 }

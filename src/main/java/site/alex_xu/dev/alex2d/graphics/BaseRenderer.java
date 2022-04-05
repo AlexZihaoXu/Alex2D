@@ -8,6 +8,11 @@ import site.alex_xu.dev.alex2d.graphics.gl.VertexBuffer;
 
 import java.util.Stack;
 
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
+import static org.lwjgl.opengl.GL11.glBlendFunc;
+import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -236,6 +241,12 @@ abstract class BaseRenderer {
     // Image
 
     public void drawImage(AbstractFrameI image, float srcX, float srcY, float srcW, float srcH, float dstX, float dstY, float dstW, float dstH, float r, float g, float b, float a) {
+        if (image == this.bufferedTexture) {
+            BufferedTexture tempTexture = new BufferedTexture(image);
+            drawImage(tempTexture, srcX, srcY, srcW, srcH, dstX, dstY, dstW, dstH, r, g, b, a);
+            tempTexture.free();
+            return;
+        }
         prepareDraw();
 
         textureShader.bind();

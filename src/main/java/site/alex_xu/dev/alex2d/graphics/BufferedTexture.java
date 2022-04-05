@@ -11,6 +11,11 @@ public class BufferedTexture extends ImageType {
     int frameBufferID;
     int renderBufferID;
 
+    public BufferedTexture(AbstractFrameI image) {
+        this(image.getWidth(), image.getHeight());
+        this.createRenderer().drawImage(image, 0 , 0);
+    }
+
     public BufferedTexture(int width, int height) {
         this.width = width;
         this.height = height;
@@ -38,8 +43,14 @@ public class BufferedTexture extends ImageType {
 
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    }
+
+    public Renderer createRenderer() {
+        return new Renderer(this);
     }
 
     @Override
@@ -72,5 +83,6 @@ public class BufferedTexture extends ImageType {
     public void onDispose() {
         Graphics.freedTextures.add(textureID);
         Graphics.freedFramebuffers.add(frameBufferID);
+        Graphics.freedRenderbuffers.add(renderBufferID);
     }
 }

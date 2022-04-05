@@ -41,6 +41,7 @@ public class Texture extends ImageType {
             b_data.put(data);
             b_data.flip();
 
+            stbi_set_flip_vertically_on_load(true);
             ByteBuffer b_img = stbi_load_from_memory(b_data, b_width, b_height, b_channels, 0);
             if (b_img == null) {
                 throw new IllegalStateException("Unable to load texture.");
