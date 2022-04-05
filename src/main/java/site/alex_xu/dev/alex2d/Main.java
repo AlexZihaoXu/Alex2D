@@ -2,15 +2,12 @@ package site.alex_xu.dev.alex2d;
 
 import org.dyn4j.dynamics.Body;
 import org.dyn4j.geometry.Circle;
-import org.dyn4j.geometry.Mass;
 import org.dyn4j.geometry.MassType;
 import org.dyn4j.geometry.Rectangle;
 import org.dyn4j.world.World;
+import site.alex_xu.dev.alex2d.controls.Mouse;
 import site.alex_xu.dev.alex2d.graphics.*;
 import site.alex_xu.dev.alex2d.graphics.Window;
-import site.alex_xu.dev.alex2d.sounds.Listener;
-import site.alex_xu.dev.alex2d.sounds.Sound;
-import site.alex_xu.dev.alex2d.sounds.SoundSource;
 import site.alex_xu.dev.alex2d.system.Clock;
 
 import java.io.IOException;
@@ -125,23 +122,23 @@ public class Main {
         }
 
         RigidRectangle rectangle = new RigidRectangle(world, -50, 60, 100, 4);
-
-
         //
-
-
-        glfwSetCursorPosCallback(window.getHandle(), (window1, xpos, ypos) -> {
-            mouseX = (float) xpos;
-            mouseY = (float) ypos;
-        });
 
         float shiftX = 0;
         float shiftY = 0;
 
         Clock ballClock = new Clock();
 
+        window.getKeyboard().addKeyTypeCallback((character) -> {
+            System.out.println("Typed: " + character);
+        });
+
+        window.getMouse().addMouseScrollCallback((deltaX, deltaY) -> {
+            System.out.println(deltaX + ", " + deltaY);
+        });
+
         while (window.isAlive()) {
-            if (ballClock.elapsedTime() > 1 / 20f) {
+            if (ballClock.elapsedTime() > 1 / 150f) {
                 Ball.add(world, (float) (Math.random() * 10), (float) (-50 + Math.random() * 10), 0.8f);
                 ballClock.reset();
             }
@@ -151,12 +148,15 @@ public class Main {
 
             float dt = clock.reset();
 
+            mouseX = window.getMouse().getX();
+            mouseY = window.getMouse().getY();
+
             // Render World
             renderer.pushMatrix();
             {
                 renderer.translate(window.getWidth() / 2f, window.getHeight() / 2f);
                 renderer.translate(0, -25);
-                renderer.translate(shiftX, shiftY);
+                renderer.translate(-shiftX, -shiftY);
                 shiftX += ((float) (((mouseX / window.getWidth()) - 0.5) * 2) * 50 - shiftX) * Math.min(1, dt) * 20;
                 shiftY += ((float) (((mouseY / window.getHeight()) - 0.5) * 2) * 50 - shiftY) * Math.min(1, dt) * 20;
                 renderer.scale(window.getWidth() / 250f);
@@ -167,8 +167,9 @@ public class Main {
 
             String[] debugStrings = new String[]{
                     "FPS: " + Math.round(1 / dt),
-                    "Mouse: " + (int) (mouseX) + ", " + (int) (mouseY),
-                    "Ball Count: " + Ball.balls.size()
+                    "Mouse: " + (int) (mouseX) + ", " + (int) (mouseY) + ": " + window.getMouse().getButton(0),
+                    "Ball Count: " + Ball.balls.size(),
+                    "Key: " + window.getKeyboard().keys().space()
             };
             // Draw Debug Strings
             {

@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
+import site.alex_xu.dev.alex2d.controls.Keyboard;
+import site.alex_xu.dev.alex2d.controls.Mouse;
 import site.alex_xu.dev.alex2d.graphics.abstracting.AbstractWindowI;
 
 import java.io.IOException;
@@ -22,6 +24,25 @@ import static org.lwjgl.system.MemoryUtil.NULL;
  */
 public class Window implements AbstractWindowI {
 
+    private static class WindowMouse extends Mouse {
+        public WindowMouse(Window window) {
+            super(window);
+        }
+        public void resetCallbacks(Window window) {
+            setCallbacks(window);
+        }
+    }
+
+    private static class WindowKeyboard extends Keyboard {
+        public WindowKeyboard(Window window) {
+            super(window);
+        }
+
+        void resetCallbacks(Window window) {
+            setCallbacks(window);
+        }
+    }
+
     // Properties
 
     private String title, _actualTitle;
@@ -34,6 +55,8 @@ public class Window implements AbstractWindowI {
 
     // Memories
 
+    private Mouse mouse;
+    private Keyboard keyboard;
     private long _lastTitleChangeTime = 0;
     private long windowHandle = 0;
     private int x, y;
@@ -88,6 +111,17 @@ public class Window implements AbstractWindowI {
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        if (mouse == null) {
+            mouse = new WindowMouse(this);
+        } else {
+            ((WindowMouse) mouse).resetCallbacks(this);
+        }
+
+        if (keyboard == null) {
+            keyboard = new WindowKeyboard(this);
+        } else {
+            ((WindowKeyboard) keyboard).resetCallbacks(this);
+        }
     }
 
 
@@ -354,6 +388,13 @@ public class Window implements AbstractWindowI {
         return windowHandle;
     }
 
+    public Mouse getMouse() {
+        return mouse;
+    }
+
+    public Keyboard getKeyboard() {
+        return keyboard;
+    }
 
     private boolean disposed = false;
     @Override
