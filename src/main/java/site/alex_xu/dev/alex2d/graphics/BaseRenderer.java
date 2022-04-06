@@ -158,10 +158,6 @@ abstract class BaseRenderer {
         this.fontRenderer = new FontRenderer(path, getFontRenderer().size);
     }
 
-    public void setSize(int size) {
-        this.fontRenderer = new FontRenderer(getFontRenderer().path, size);
-    }
-
     public int getFontSize() {
         return getFontRenderer().size;
     }
