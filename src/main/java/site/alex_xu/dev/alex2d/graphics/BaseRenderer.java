@@ -316,6 +316,23 @@ abstract class BaseRenderer {
 
     // Getters
 
+    public int getWidth() {
+        if (window != null) {
+            return window.getWidth();
+        } else if (bufferedTexture != null) {
+            return bufferedTexture.getWidth();
+        }
+        return -1;
+    }
+
+    public int getHeight() {
+        if (window != null) {
+            return window.getHeight();
+        } else if (bufferedTexture != null) {
+            return bufferedTexture.getHeight();
+        }
+        return -1;
+    }
 
     public float getStrokeWidth() {
         return strokeWidth;
