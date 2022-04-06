@@ -42,6 +42,10 @@ public class Renderer extends BaseRenderer {
 
     // Clear
 
+    public void clear(Color color) {
+        clear(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+    }
+
     public void clear(float brightness) {
         clear(brightness, 1);
     }
@@ -90,6 +94,10 @@ public class Renderer extends BaseRenderer {
         drawImage(image, 0, 0, image.getWidth(), image.getHeight(), x, y, image.getWidth(), image.getHeight(), 1, 1, 1, 1);
     }
 
+    public void drawImage(AbstractFrameI image, Vector2f pos) {
+        drawImage(image, pos.x, pos.y);
+    }
+
     // Transformations
 
     public void translate(Vector2f xy) {
@@ -118,5 +126,8 @@ public class Renderer extends BaseRenderer {
         setColor(brightness, 1);
     }
 
+    public void setColor(Color color) {
+        setColor(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f, color.getAlpha() / 255f);
+    }
 
 }
