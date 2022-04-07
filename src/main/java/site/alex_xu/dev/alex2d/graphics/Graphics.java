@@ -31,14 +31,26 @@ public final class Graphics {
     }
 
     static void gc() {
-        while (!freedTextures.isEmpty()) {
-            glDeleteTextures(freedTextures.pop());
+        try {
+            while (!freedTextures.isEmpty()) {
+                glDeleteTextures(freedTextures.pop());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        while (!freedFramebuffers.isEmpty()){
-            glDeleteFramebuffers(freedFramebuffers.pop());
+        try {
+            while (!freedFramebuffers.isEmpty()){
+                glDeleteFramebuffers(freedFramebuffers.pop());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        while (!freedRenderbuffers.isEmpty()){
-            glDeleteRenderbuffers(freedRenderbuffers.pop());
+        try {
+            while (!freedRenderbuffers.isEmpty()){
+                glDeleteRenderbuffers(freedRenderbuffers.pop());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         Freeable.gc();
     }
