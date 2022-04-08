@@ -8,11 +8,6 @@ import site.alex_xu.dev.alex2d.graphics.gl.VertexBuffer;
 
 import java.util.Stack;
 
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
-import static org.lwjgl.opengl.GL11.glBlendFunc;
-import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
@@ -31,6 +26,8 @@ abstract class BaseRenderer {
 
     private static Shader textureShader;
     private static VertexArray textureVAO;
+
+    private static Shader triangleTexShader;
 
     private static void init() {
         if (initialized)
@@ -67,6 +64,12 @@ abstract class BaseRenderer {
                     1, 1, 1, 0, 0, 0
             });
             textureVAO.configure(textureVBO).push(2).apply();
+        }
+        if (triangleTexShader == null) {
+            triangleTexShader = new Shader()
+                    .addFromResource("shaders/triangleTex.vert")
+                    .addFromResource("shaders/triangleTex.frag")
+                    .link();
         }
         initialized = true;
     }
@@ -258,12 +261,43 @@ abstract class BaseRenderer {
         glActiveTexture(GL_TEXTURE0);
         if (image instanceof BufferedTexture) {
             ((BufferedTexture) image).bind();
-        }
-        else if (image instanceof Texture)
+        } else if (image instanceof Texture)
             ((Texture) image).bind();
 
         textureVAO.bind();
         glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    public void drawImageTriangle(AbstractFrameI image, float x1, float y1, float x2, float y2, float x3, float y3, float texShiftX, float texShiftY, float texScale, float r, float g, float b, float a) {
+        prepareDraw();
+        triangleTexShader.bind();
+        triangleTexShader.setVec4("pos1", x1, y1, texShiftX / image.getWidth(), texShiftY / image.getHeight());
+        triangleTexShader.setVec4("pos2", x2, y2, ((x2 - x1) / texScale + texShiftX) / image.getWidth(), ((y2 - y1) / texScale + texShiftY) / image.getHeight());
+        triangleTexShader.setVec4("pos3", x3, y3, ((x3 - x1) / texScale + texShiftX) / image.getWidth(), ((y3 - y1) / texScale + texShiftY) / image.getHeight());
+        triangleTexShader.setVec4("color", r, g, b, a);
+        triangleTexShader.setMat4("windowMat", false, orthoMatrix);
+        triangleTexShader.setMat4("transMat", false, getTransformationsMatrix());
+
+        glActiveTexture(GL_TEXTURE0);
+        if (image instanceof BufferedTexture) {
+            ((BufferedTexture) image).bind();
+        } else if (image instanceof Texture)
+            ((Texture) image).bind();
+
+        trianglesVAO.bind();
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    }
+
+    protected void drawImagePolygon(AbstractFrameI image, float[] vertices, float texShiftX, float texShiftY, float scale, float r, float g, float b, float a) {
+        if (vertices.length % 2 == 0 && vertices.length >= 2 * 3) {
+            for (int i = 4; i < vertices.length; i += 2) {
+                float vx = vertices[i];
+                float vy = vertices[i + 1];
+                drawImageTriangle(image, vertices[0], vertices[1], vertices[i - 2], vertices[i - 1], vx, vy, texShiftX, texShiftY, scale, r, g, b, a);
+            }
+        } else {
+            throw new RuntimeException("Wrong vertex info!");
+        }
     }
 
     // Transformations
